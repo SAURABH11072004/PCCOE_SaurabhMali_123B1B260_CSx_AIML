@@ -1,0 +1,297 @@
+[
+  {
+    "id": "Q01",
+    "type": "factual_lookup",
+    "question": "What is the primary function of ThrottleControl_SWC, and what are its provided and required ports?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "expected_facts": [
+      "ThrottleControl_SWC",
+      "PpThrottlePos",
+      "RpPedalSensor",
+      "electronic throttle",
+      "ASIL-D"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q02",
+    "type": "signal_lookup",
+    "question": "What are the data type, range, and update rate of Sig_ThrottleAngle in the interface dictionary?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary"
+    ],
+    "expected_page": 4,
+    "expected_facts": [
+      "Sig_ThrottleAngle",
+      "float32",
+      "0.0, 100.0",
+      "10ms"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q03",
+    "type": "signal_lookup",
+    "question": "What signals are contained within the If_BatteryState interface and what are their update rates?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary"
+    ],
+    "expected_page": 4,
+    "expected_facts": [
+      "Sig_StateOfCharge",
+      "Sig_PackVoltage",
+      "Sig_PackCurrent",
+      "100ms",
+      "50ms",
+      "20ms"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q04",
+    "type": "component_lookup",
+    "question": "Which software component controls vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "expected_facts": [
+      "BrakeManager_SWC",
+      "PpBrakeTorqueRequest",
+      "RpWheelSpeed"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q05",
+    "type": "functional_flow",
+    "question": "Explain Flow 1: Driver Acceleration Request Flow from accelerator pedal depression to actuator publication.",
+    "target_sections": [
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "expected_facts": [
+      "Flow 1",
+      "RpPedalSensor",
+      "ThrottleControl_SWC",
+      "Sig_ThrottleAngle",
+      "PpThrottlePos",
+      "10ms"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q06",
+    "type": "functional_flow",
+    "question": "What happens in Flow 2 if the battery State of Charge exceeds 95% during regenerative braking?",
+    "target_sections": [
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "expected_facts": [
+      "95%",
+      "regenerative braking is tapered",
+      "hydraulic friction braking"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q07",
+    "type": "functional_flow",
+    "question": "How does ThermalControl_SWC trigger derating if coolant temperature exceeds 105 degC?",
+    "target_sections": [
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "expected_facts": [
+      "105 degC",
+      "Sig_CoolantTemp",
+      "derating",
+      "50%"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q08",
+    "type": "inconsistency_detection",
+    "question": "Is there a conflict regarding the transmission period of Sig_ThrottleAngle between Section 4 and Section 6.2?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary",
+      "Section 6: Dependencies, Timing & RTE Interactions"
+    ],
+    "expected_page": 6,
+    "expected_facts": [
+      "10ms in Section 4",
+      "50ms in Section 6.2",
+      "conflict",
+      "inconsistency"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q09",
+    "type": "issue_lookup",
+    "question": "Does ThermalControl_SWC reference any interface that is missing from the interface dictionary?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "expected_facts": [
+      "RpRefrigerantPressure",
+      "If_RefrigerantPressure",
+      "missing",
+      "not defined"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q10",
+    "type": "architecture_overview",
+    "question": "What AUTOSAR Classic release and operating system standard are specified in the document?",
+    "target_sections": [
+      "Section 1: Executive Summary & Architectural Scope",
+      "Section 2: Architectural Overview & AUTOSAR Layered Model"
+    ],
+    "expected_page": 1,
+    "expected_facts": [
+      "AUTOSAR Classic Platform Release 4.4.0",
+      "OSEK/VDX",
+      "VFB",
+      "RTE"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q11",
+    "type": "safety_lookup",
+    "question": "What ASIL safety integrity levels are allocated to ThrottleControl_SWC, BrakeManager_SWC, and BatteryManagement_SWC?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "expected_facts": [
+      "ASIL-D for ThrottleControl_SWC",
+      "ASIL-D for BrakeManager_SWC",
+      "ASIL-C for BatteryManagement_SWC"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q12",
+    "type": "task_scheduling",
+    "question": "Which tasks in the scheduling matrix execute Runnable_CalculateThrottle and Runnable_RegulateThermalLoop?",
+    "target_sections": [
+      "Section 6: Dependencies, Timing & RTE Interactions"
+    ],
+    "expected_page": 6,
+    "expected_facts": [
+      "Task_10ms",
+      "Task_100ms",
+      "Runnable_CalculateThrottle",
+      "Runnable_RegulateThermalLoop"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q13",
+    "type": "negative_abstention",
+    "question": "What is the radar sensor frequency and antenna array configuration for Autonomous Emergency Braking (AEB)?",
+    "target_sections": [],
+    "expected_page": null,
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "Q14",
+    "type": "negative_abstention",
+    "question": "What is the chemical composition of the cathode material used in the battery cells?",
+    "target_sections": [],
+    "expected_page": null,
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "Q15",
+    "type": "negative_abstention",
+    "question": "Which software component manages the infotainment head-unit Bluetooth pairing state?",
+    "target_sections": [],
+    "expected_page": null,
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "Q16",
+    "type": "component_lookup",
+    "question": "What are the ports and role of Gateway_SWC in the architecture?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "expected_facts": [
+      "Gateway_SWC",
+      "PpEthTelemetry",
+      "CAN-FD",
+      "Automotive Ethernet"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q17",
+    "type": "signal_lookup",
+    "question": "What is the update rate and range of Sig_PumpSpeedTarget in the If_ThermalData interface?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary"
+    ],
+    "expected_page": 4,
+    "expected_facts": [
+      "Sig_PumpSpeedTarget",
+      "0, 6000",
+      "RPM",
+      "100ms"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q18",
+    "type": "cross_reference",
+    "question": "Does Section 6.3 refer to any external section for diagnostic trouble code mapping?",
+    "target_sections": [
+      "Section 6: Dependencies, Timing & RTE Interactions"
+    ],
+    "expected_page": 6,
+    "expected_facts": [
+      "Section 9.4",
+      "DEM",
+      "Diagnostic Event Manager"
+    ],
+    "should_abstain": false
+  },
+  {
+    "id": "Q19",
+    "type": "negative_abstention",
+    "question": "What is the lidar point cloud resolution and laser wavelength used in the vehicle perception system?",
+    "target_sections": [],
+    "expected_page": null,
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "Q20",
+    "type": "flow_inconsistency",
+    "question": "Does Flow 2 reference any component that is missing from Section 3's component list?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions",
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "expected_facts": [
+      "InverterControl_SWC",
+      "not declared",
+      "missing"
+    ],
+    "should_abstain": false
+  }
+]

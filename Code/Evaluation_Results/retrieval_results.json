@@ -1,0 +1,1557 @@
+[
+  {
+    "question_id": "Q01",
+    "question": "What is the primary function of ThrottleControl_SWC, and what are its provided and required ports?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 2,
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 3,
+          "extraction_method": "pdf_text",
+          "char_count": 2382,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2"
+        },
+        "similarity": 0.7771019339561462,
+        "distance": 0.4457961320877075
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "char_count": 1645,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "page_num": 5
+        },
+        "similarity": 0.7613895535469055,
+        "distance": 0.47722089290618896
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "char_count": 1803,
+          "chunk_index": 3,
+          "page_num": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.6726579666137695,
+        "distance": 0.6546840667724609
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "char_count": 1258,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 6,
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 5,
+          "section": "Section 6: Dependencies, Timing & RTE Interactions"
+        },
+        "similarity": 0.6680819988250732,
+        "distance": 0.6638360023498535
+      }
+    ]
+  },
+  {
+    "question_id": "Q02",
+    "question": "What are the data type, range, and update rate of Sig_ThrottleAngle in the interface dictionary?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary"
+    ],
+    "expected_page": 4,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "extraction_method": "pdf_text",
+          "char_count": 1803,
+          "chunk_index": 3,
+          "page_num": 4,
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.7400734722614288,
+        "distance": 0.5198530554771423
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "chunk_index": 5,
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 1258,
+          "page_num": 6
+        },
+        "similarity": 0.7311096787452698,
+        "distance": 0.5377806425094604
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "extraction_method": "pdf_text",
+          "chunk_index": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 5,
+          "char_count": 1645,
+          "section": "Section 5: Functional Flows and Inter-SWC Communication"
+        },
+        "similarity": 0.7223268449306488,
+        "distance": 0.5553463101387024
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "page_num": 3,
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "extraction_method": "pdf_text",
+          "char_count": 2382,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 2
+        },
+        "similarity": 0.713415265083313,
+        "distance": 0.573169469833374
+      }
+    ]
+  },
+  {
+    "question_id": "Q03",
+    "question": "What signals are contained within the If_BatteryState interface and what are their update rates?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary"
+    ],
+    "expected_page": 4,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1803,
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "chunk_index": 3,
+          "page_num": 4,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.7281335294246674,
+        "distance": 0.5437329411506653
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "extraction_method": "pdf_text",
+          "chunk_index": 5,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 1258,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 6,
+          "section": "Section 6: Dependencies, Timing & RTE Interactions"
+        },
+        "similarity": 0.7150575220584869,
+        "distance": 0.5698849558830261
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "page_num": 5,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1645,
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.6860482096672058,
+        "distance": 0.6279035806655884
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 2382,
+          "chunk_index": 2,
+          "page_num": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions"
+        },
+        "similarity": 0.6814990639686584,
+        "distance": 0.6370018720626831
+      }
+    ]
+  },
+  {
+    "question_id": "Q04",
+    "question": "Which software component controls vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "char_count": 2382,
+          "chunk_index": 2,
+          "page_num": 3,
+          "extraction_method": "pdf_text"
+        },
+        "similarity": 0.7884677946567535,
+        "distance": 0.4230644106864929
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "char_count": 1645,
+          "extraction_method": "pdf_text",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 5,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.7472507357597351,
+        "distance": 0.5054985284805298
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "page_num": 1,
+          "extraction_method": "pdf_text",
+          "chunk_index": 0,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1513,
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 1: Executive Summary & Architectural Scope"
+        },
+        "similarity": 0.7180217504501343,
+        "distance": 0.5639564990997314
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "chunk_index": 3,
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "page_num": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 1803
+        },
+        "similarity": 0.6993893384933472,
+        "distance": 0.6012213230133057
+      }
+    ]
+  },
+  {
+    "question_id": "Q05",
+    "question": "Explain Flow 1: Driver Acceleration Request Flow from accelerator pedal depression to actuator publication.",
+    "target_sections": [
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1645,
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "page_num": 5
+        },
+        "similarity": 0.7344523966312408,
+        "distance": 0.5310952067375183
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "page_num": 3,
+          "char_count": 2382,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "chunk_index": 2,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.7055202722549438,
+        "distance": 0.5889594554901123
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "page_num": 6,
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "chunk_index": 5,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1258,
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.6340566277503967,
+        "distance": 0.7318867444992065
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "char_count": 1803,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 4,
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "chunk_index": 3,
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.6291868686676025,
+        "distance": 0.7416262626647949
+      }
+    ]
+  },
+  {
+    "question_id": "Q06",
+    "question": "What happens in Flow 2 if the battery State of Charge exceeds 95% during regenerative braking?",
+    "target_sections": [
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "chunk_index": 4,
+          "char_count": 1645,
+          "page_num": 5,
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication"
+        },
+        "similarity": 0.6328052282333374,
+        "distance": 0.7343895435333252
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 2382,
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "extraction_method": "pdf_text",
+          "page_num": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 2
+        },
+        "similarity": 0.5902347564697266,
+        "distance": 0.8195304870605469
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "page_num": 6,
+          "extraction_method": "pdf_text",
+          "chunk_index": 5,
+          "char_count": 1258,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions"
+        },
+        "similarity": 0.5717876851558685,
+        "distance": 0.8564246296882629
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 4,
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 3,
+          "char_count": 1803,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 4: Software Interfaces and Signal Dictionary"
+        },
+        "similarity": 0.569962203502655,
+        "distance": 0.8600755929946899
+      }
+    ]
+  },
+  {
+    "question_id": "Q07",
+    "question": "How does ThermalControl_SWC trigger derating if coolant temperature exceeds 105 degC?",
+    "target_sections": [
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "char_count": 1645,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 5,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4"
+        },
+        "similarity": 0.6368944048881531,
+        "distance": 0.7262111902236938
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 2,
+          "page_num": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 2382,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6337867379188538,
+        "distance": 0.7324265241622925
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "chunk_index": 3,
+          "page_num": 4,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text",
+          "char_count": 1803
+        },
+        "similarity": 0.6163453161716461,
+        "distance": 0.7673093676567078
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 6,
+          "chunk_index": 5,
+          "char_count": 1258,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.6039856672286987,
+        "distance": 0.7920286655426025
+      }
+    ]
+  },
+  {
+    "question_id": "Q08",
+    "question": "Is there a conflict regarding the transmission period of Sig_ThrottleAngle between Section 4 and Section 6.2?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary",
+      "Section 6: Dependencies, Timing & RTE Interactions"
+    ],
+    "expected_page": 6,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "page_num": 6,
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "char_count": 1258,
+          "chunk_index": 5,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.7276433110237122,
+        "distance": 0.5447133779525757
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "page_num": 5,
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "char_count": 1645,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text",
+          "chunk_index": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication"
+        },
+        "similarity": 0.7141141891479492,
+        "distance": 0.5717716217041016
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 2382,
+          "page_num": 3,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 2,
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions"
+        },
+        "similarity": 0.6583827137947083,
+        "distance": 0.6832345724105835
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "chunk_index": 3,
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "char_count": 1803,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 4,
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6558050811290741,
+        "distance": 0.6883898377418518
+      }
+    ]
+  },
+  {
+    "question_id": "Q09",
+    "question": "Does ThermalControl_SWC reference any interface that is missing from the interface dictionary?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 2,
+          "char_count": 2382,
+          "page_num": 3,
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2"
+        },
+        "similarity": 0.6838752031326294,
+        "distance": 0.6322495937347412
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1803,
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "page_num": 4,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6747150421142578,
+        "distance": 0.6505699157714844
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "page_num": 5,
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "char_count": 1645
+        },
+        "similarity": 0.6705780029296875,
+        "distance": 0.658843994140625
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "char_count": 1513,
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "page_num": 1,
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 0,
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.6425800621509552,
+        "distance": 0.7148398756980896
+      }
+    ]
+  },
+  {
+    "question_id": "Q10",
+    "question": "What AUTOSAR Classic release and operating system standard are specified in the document?",
+    "target_sections": [
+      "Section 1: Executive Summary & Architectural Scope",
+      "Section 2: Architectural Overview & AUTOSAR Layered Model"
+    ],
+    "expected_page": 1,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "char_count": 1329,
+          "extraction_method": "pdf_text",
+          "page_num": 2,
+          "chunk_index": 1,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.7753062546253204,
+        "distance": 0.44938749074935913
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "chunk_index": 5,
+          "page_num": 6,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "char_count": 1258,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.7406162023544312,
+        "distance": 0.5187675952911377
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "char_count": 1513,
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "chunk_index": 0,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 1,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.7327481806278229,
+        "distance": 0.5345036387443542
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "char_count": 1803,
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 3,
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "filename": "synthetic_autosar_hld.pdf",
+          "page_num": 4,
+          "extraction_method": "pdf_text"
+        },
+        "similarity": 0.7228761613368988,
+        "distance": 0.5542476773262024
+      }
+    ]
+  },
+  {
+    "question_id": "Q11",
+    "question": "What ASIL safety integrity levels are allocated to ThrottleControl_SWC, BrakeManager_SWC, and BatteryManagement_SWC?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1645,
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "chunk_index": 4,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 5
+        },
+        "similarity": 0.7889257371425629,
+        "distance": 0.42214852571487427
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "page_num": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 2382,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "chunk_index": 2
+        },
+        "similarity": 0.7663109302520752,
+        "distance": 0.4673781394958496
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "char_count": 1329,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "page_num": 2,
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 1,
+          "extraction_method": "pdf_text"
+        },
+        "similarity": 0.7118245661258698,
+        "distance": 0.5763508677482605
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1258,
+          "chunk_index": 5,
+          "page_num": 6,
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.7064584493637085,
+        "distance": 0.587083101272583
+      }
+    ]
+  },
+  {
+    "question_id": "Q12",
+    "question": "Which tasks in the scheduling matrix execute Runnable_CalculateThrottle and Runnable_RegulateThermalLoop?",
+    "target_sections": [
+      "Section 6: Dependencies, Timing & RTE Interactions"
+    ],
+    "expected_page": 6,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "char_count": 1258,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "chunk_index": 5,
+          "page_num": 6,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.6903794407844543,
+        "distance": 0.6192411184310913
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "chunk_index": 1,
+          "page_num": 2,
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 1329,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1"
+        },
+        "similarity": 0.6466606855392456,
+        "distance": 0.7066786289215088
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "chunk_index": 4,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1645,
+          "page_num": 5,
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4"
+        },
+        "similarity": 0.6415494084358215,
+        "distance": 0.7169011831283569
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "chunk_index": 2,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "page_num": 3,
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "char_count": 2382
+        },
+        "similarity": 0.6244027018547058,
+        "distance": 0.7511945962905884
+      }
+    ]
+  },
+  {
+    "question_id": "Q13",
+    "question": "What is the radar sensor frequency and antenna array configuration for Autonomous Emergency Braking (AEB)?",
+    "target_sections": [],
+    "expected_page": null,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "page_num": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "chunk_index": 3,
+          "extraction_method": "pdf_text",
+          "char_count": 1803,
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6707612872123718,
+        "distance": 0.6584774255752563
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "chunk_index": 5,
+          "char_count": 1258,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "page_num": 6
+        },
+        "similarity": 0.653863251209259,
+        "distance": 0.6922734975814819
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 2,
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "char_count": 2382,
+          "page_num": 3,
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6475567519664764,
+        "distance": 0.7048864960670471
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "page_num": 5,
+          "extraction_method": "pdf_text",
+          "char_count": 1645,
+          "chunk_index": 4,
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.6411667168140411,
+        "distance": 0.7176665663719177
+      }
+    ]
+  },
+  {
+    "question_id": "Q14",
+    "question": "What is the chemical composition of the cathode material used in the battery cells?",
+    "target_sections": [],
+    "expected_page": null,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "page_num": 2,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 1,
+          "char_count": 1329,
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.5472925007343292,
+        "distance": 0.9054149985313416
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "page_num": 1,
+          "char_count": 1513,
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 0,
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text"
+        },
+        "similarity": 0.536596417427063,
+        "distance": 0.926807165145874
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "chunk_index": 5,
+          "char_count": 1258,
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "page_num": 6,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.5353392660617828,
+        "distance": 0.9293214678764343
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "chunk_index": 3,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "extraction_method": "pdf_text",
+          "char_count": 1803,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "page_num": 4
+        },
+        "similarity": 0.5335508584976196,
+        "distance": 0.9328982830047607
+      }
+    ]
+  },
+  {
+    "question_id": "Q15",
+    "question": "Which software component manages the infotainment head-unit Bluetooth pairing state?",
+    "target_sections": [],
+    "expected_page": null,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 2,
+          "char_count": 2382,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 3
+        },
+        "similarity": 0.6256838440895081,
+        "distance": 0.7486323118209839
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "page_num": 1,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1513,
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "chunk_index": 0,
+          "extraction_method": "pdf_text",
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.6249344050884247,
+        "distance": 0.7501311898231506
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "char_count": 1258,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 5,
+          "page_num": 6
+        },
+        "similarity": 0.6189796030521393,
+        "distance": 0.7620407938957214
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "chunk_index": 1,
+          "char_count": 1329,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 2,
+          "extraction_method": "pdf_text",
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.5994239151477814,
+        "distance": 0.8011521697044373
+      }
+    ]
+  },
+  {
+    "question_id": "Q16",
+    "question": "What are the ports and role of Gateway_SWC in the architecture?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions"
+    ],
+    "expected_page": 3,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "char_count": 2382,
+          "page_num": 3,
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_index": 2,
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6507745385169983,
+        "distance": 0.6984509229660034
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1645,
+          "page_num": 5,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "section": "Section 5: Functional Flows and Inter-SWC Communication"
+        },
+        "similarity": 0.6387891173362732,
+        "distance": 0.7224217653274536
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "page_num": 1,
+          "char_count": 1513,
+          "chunk_index": 0,
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.6096646189689636,
+        "distance": 0.7806707620620728
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "char_count": 1329,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 1,
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "page_num": 2,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.5917544066905975,
+        "distance": 0.8164911866188049
+      }
+    ]
+  },
+  {
+    "question_id": "Q17",
+    "question": "What is the update rate and range of Sig_PumpSpeedTarget in the If_ThermalData interface?",
+    "target_sections": [
+      "Section 4: Software Interfaces and Signal Dictionary"
+    ],
+    "expected_page": 4,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "page_num": 6,
+          "extraction_method": "pdf_text",
+          "chunk_index": 5,
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 1258,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.7322165966033936,
+        "distance": 0.5355668067932129
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "page_num": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_index": 3,
+          "char_count": 1803,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3"
+        },
+        "similarity": 0.7105914652347565,
+        "distance": 0.5788170695304871
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_index": 4,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1645,
+          "extraction_method": "pdf_text",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "page_num": 5
+        },
+        "similarity": 0.6762021780014038,
+        "distance": 0.6475956439971924
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "chunk_index": 2,
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 2382,
+          "extraction_method": "pdf_text",
+          "page_num": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions"
+        },
+        "similarity": 0.6611591279506683,
+        "distance": 0.6776817440986633
+      }
+    ]
+  },
+  {
+    "question_id": "Q18",
+    "question": "Does Section 6.3 refer to any external section for diagnostic trouble code mapping?",
+    "target_sections": [
+      "Section 6: Dependencies, Timing & RTE Interactions"
+    ],
+    "expected_page": 6,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "extraction_method": "pdf_text",
+          "chunk_index": 5,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "char_count": 1258,
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 6
+        },
+        "similarity": 0.6782892346382141,
+        "distance": 0.6434215307235718
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "chunk_index": 1,
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 2,
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "char_count": 1329,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.6493526697158813,
+        "distance": 0.7012946605682373
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "chunk_index": 0,
+          "char_count": 1513,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "page_num": 1
+        },
+        "similarity": 0.6460620760917664,
+        "distance": 0.7078758478164673
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "char_count": 2382,
+          "page_num": 3,
+          "chunk_index": 2,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions"
+        },
+        "similarity": 0.6406731009483337,
+        "distance": 0.7186537981033325
+      }
+    ]
+  },
+  {
+    "question_id": "Q19",
+    "question": "What is the lidar point cloud resolution and laser wavelength used in the vehicle perception system?",
+    "target_sections": [],
+    "expected_page": null,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "page_num": 6,
+          "char_count": 1258,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_index": 5,
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "filename": "synthetic_autosar_hld.pdf"
+        },
+        "similarity": 0.6049506366252899,
+        "distance": 0.7900987267494202
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 2: Architectural Overview & AUTOSAR Layered Model\nThe architecture decomposes vehicle functions into distinct, decoupled software components (SWCs).\nInter-component communications are mapped through standardized AUTOSAR Port Prototypes.\n2.1 Execution Model\nThe Powertrain Domain Controller executes on a multi-core 32-bit automotive microcontroller (e.g., TriCore AURIX\nor RH850). The operating system is an OSEK/VDX compliant AUTOSAR OS supporting static priority-preemptive\ntask scheduling:\n- Task_10ms: High-priority periodic task executing powertrain throttle and brake torque loops.\n- Task_20ms: Medium-priority task managing battery pack voltage and current monitoring.\n- Task_100ms: Low-priority supervisory task coordinating thermal loops and gateway routing.\n- Task_Background: Non-time-critical diagnostic and background memory verification.\n2.2 Memory Mapping and Safety Isolation\nComponents assigned to safety-critical functions (ASIL-C / ASIL-D) operate in protected memory partitions with\ndedicated Hardware Memory Protection Units (MPU). Non-safety body functions operate in separate non-trusted\npartitions.",
+        "metadata": {
+          "section": "Section 2: Architectural Overview & AUTOSAR Layered Model",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "chunk_id": "doc_ca2cc2aba1e4_p2_c1",
+          "page_num": 2,
+          "extraction_method": "pdf_text",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 1329,
+          "chunk_index": 1
+        },
+        "similarity": 0.588217556476593,
+        "distance": 0.823564887046814
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 4: Software Interfaces and Signal Dictionary\nAll communications between SWCs use AUTOSAR Sender-Receiver interfaces.\n4.1 Interface Definitions:\n- Interface If_ThrottlePosition:\n - Sig_ThrottleAngle: float32, range [0.0, 100.0] %, Resolution 0.1 %, Update Rate: 10ms.\n - Sig_ThrottleFaultStatus: uint8, range [0, 3] (0=OK, 1=Degraded, 2=Fault, 3=SensorLoss), Update Rate: 10ms.\n- Interface If_BrakeTorque:\n - Sig_RequestedTorque: int16, range [-500, 500] Nm, Resolution 1 Nm, Update Rate: 10ms.\n - Sig_BrakePedalState: boolean (0=Released, 1=Depressed), Update Rate: 10ms.\n- Interface If_BatteryState:\n - Sig_StateOfCharge: uint8, range [0, 100] %, Resolution 1 %, Update Rate: 100ms.\n - Sig_PackVoltage: float32, range [0.0, 800.0] V, Resolution 0.05 V, Update Rate: 50ms.\n - Sig_PackCurrent: float32, range [-400.0, 400.0] A, Resolution 0.1 A, Update Rate: 20ms.\n- Interface If_ThermalData:\n - Sig_CoolantTemp: int16, range [-40, 150] degC, Resolution 1 degC, Update Rate: 500ms.\n - Sig_PumpSpeedTarget: uint16, range [0, 6000] RPM, Resolution 10 RPM, Update Rate: 100ms.\n4.2 Interface Table Summary:\n| Interface Name | Data Elements | Data Type | Cycle Time | Safety Level |\n| If_ThrottlePosition | Sig_ThrottleAngle, Sig_ThrottleFaultStatus | float32, uint8 | 10ms | ASIL-D |\n| If_BrakeTorque | Sig_RequestedTorque, Sig_BrakePedalState | int16, boolean | 10ms | ASIL-D |\n| If_BatteryState | Sig_StateOfCharge, Sig_PackVoltage, Sig_PackCurrent | uint8, float32, float32 | 100ms / 50ms |\nASIL-C |\n| If_ThermalData | Sig_CoolantTemp, Sig_PumpSpeedTarget | int16, uint16 | 500ms / 100ms | ASIL-B |",
+        "metadata": {
+          "chunk_id": "doc_ca2cc2aba1e4_p4_c3",
+          "doc_id": "doc_ca2cc2aba1e4",
+          "char_count": 1803,
+          "page_num": 4,
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "section": "Section 4: Software Interfaces and Signal Dictionary",
+          "chunk_index": 3,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.5811018347740173,
+        "distance": 0.8377963304519653
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "char_count": 2382,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "extraction_method": "pdf_text",
+          "filename": "synthetic_autosar_hld.pdf",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 3,
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "chunk_index": 2
+        },
+        "similarity": 0.5693348050117493,
+        "distance": 0.8613303899765015
+      }
+    ]
+  },
+  {
+    "question_id": "Q20",
+    "question": "Does Flow 2 reference any component that is missing from Section 3's component list?",
+    "target_sections": [
+      "Section 3: Software Components (SWCs) and Port Definitions",
+      "Section 5: Functional Flows and Inter-SWC Communication"
+    ],
+    "expected_page": 5,
+    "retrieved_chunks": [
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 3: Software Components (SWCs) and Port Definitions\nThe Application Layer defines five primary software components:\n3.1 ThrottleControl_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Responsible for calculating requested engine/motor throttle angle based on driver accelerator pedal\ninputs.\n- Provided Ports:\n - PpThrottlePos: Provides calculated throttle command across interface If_ThrottlePosition.\n- Required Ports:\n - RpPedalSensor: Receives dual redundant analog accelerator pedal sensor voltages.\n3.2 BrakeManager_SWC\n- Component Type: Atomic Application Software Component (ASIL-D).\n- Description: Coordinates vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests.\n- Provided Ports:\n - PpBrakeTorqueRequest: Provides electric motor regenerative torque request via interface If_BrakeTorque.\n- Required Ports:\n - RpWheelSpeed: Receives four-wheel speed sensor pulses from the ABS/ESC controller.\n3.3 BatteryManagement_SWC\n- Component Type: Atomic Application Software Component (ASIL-C).\n- Description: Monitors high-voltage battery state of charge (SoC), pack temperature, and high-voltage contactor\nstate.\n- Provided Ports:\n - PpBMSStatus: Broadcasts battery pack state and discharge limits via interface If_BatteryState.\n- Required Ports:\n - RpCellVoltage: Receives individual lithium-ion cell voltages from internal BMS slave modules.\n3.4 ThermalControl_SWC\n- Component Type: Sensor/Actuator Software Component (ASIL-B).\n- Description: Controls powertrain cooling loop water pumps, refrigerant valves, and front radiator fans.\n- Provided Ports:\n - PpFanSpeedCommand: Actuates PWM radiator fan speed.\n- Required Ports:\n - RpCoolantTemp: Reads coolant temperature sensors via interface If_ThermalData.\n - RpRefrigerantPressure: Reads high-pressure AC circuit pressure via interface If_RefrigerantPressure.\n3.5 Gateway_SWC\n- Component Type: Complex Device Driver / Application Gateway SWC (QM).\n- Description: Translates and filters signals between CAN-FD Powertrain Bus and Automotive Ethernet Backbone.\n- Provided Ports:\n - PpEthTelemetry: Transmits telemetry frames to vehicle telematics unit.",
+        "metadata": {
+          "chunk_index": 2,
+          "extraction_method": "pdf_text",
+          "chunk_id": "doc_ca2cc2aba1e4_p3_c2",
+          "char_count": 2382,
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "page_num": 3,
+          "filename": "synthetic_autosar_hld.pdf",
+          "section": "Section 3: Software Components (SWCs) and Port Definitions",
+          "doc_id": "doc_ca2cc2aba1e4"
+        },
+        "similarity": 0.619934618473053,
+        "distance": 0.760130763053894
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0 | Status: Draft Engineering Specification\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 1: Executive Summary & Architectural Scope\nThis document specifies the High-Level Design (HLD) for the next-generation Electric Vehicle Powertrain Domain\nController (PDC) and Body Control Module (BCM). The system is developed in accordance with the AUTOSAR\nClassic Platform Release 4.4.0 specification.\n1.1 Purpose and Architectural Objectives\nThe primary purpose of the Powertrain Domain Controller is to manage vehicle propulsion, torque coordination,\nhigh-voltage battery state management, thermal cooling loops, and high-speed gateway communication. The\nsoftware architecture strictly enforces modular component separation through the AUTOSAR Virtual Functional Bus\n(VFB) and the Runtime Environment (RTE).\n1.2 Layered Architecture Overview\nThe system follows standard AUTOSAR layered architecture:\n- Application Software Layer (ASW): Houses Atomic Software Components (SWCs).\n- Runtime Environment (RTE): Facilitates location-independent inter-SWC communication and Basic Software\nabstraction.\n- Basic Software (BSW): Includes Microcontroller Abstraction Layer (MCAL), ECU Abstraction, System Services\n(EcuM, BswM), and Communication Stack (Com, CanIf, CanSM, PduR).\nAll interfaces conform to AUTOSAR Sender-Receiver and Client-Server communication paradigms.",
+        "metadata": {
+          "doc_id": "doc_ca2cc2aba1e4",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "section": "Section 1: Executive Summary & Architectural Scope",
+          "char_count": 1513,
+          "filename": "synthetic_autosar_hld.pdf",
+          "chunk_id": "doc_ca2cc2aba1e4_p1_c0",
+          "chunk_index": 0,
+          "extraction_method": "pdf_text",
+          "page_num": 1
+        },
+        "similarity": 0.5966411530971527,
+        "distance": 0.8067176938056946
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 5: Functional Flows and Inter-SWC Communication\nThe system realizes vehicle operational behavior through coordinated functional execution chains:\n5.1 Flow 1: Driver Acceleration Request Flow\n1. Driver depresses the accelerator pedal.\n2. Accelerator pedal voltage is acquired through MCAL ADC driver by RpPedalSensor port on\nThrottleControl_SWC.\n3. ThrottleControl_SWC validates dual sensor plausibility and checks for cross-channel plausibility faults.\n4. Calculated throttle demand is published as Sig_ThrottleAngle on port PpThrottlePos.\n5. The RTE transfers Sig_ThrottleAngle to the inverter actuator manager within 10ms.\n5.2 Flow 2: Regenerative Braking Coordination Flow\n1. BrakeManager_SWC detects brake pedal application and evaluates vehicle speed from RpWheelSpeed.\n2. BrakeManager_SWC queries battery absorption capacity from BatteryManagement_SWC via PpBMSStatus.\n3. BrakeManager_SWC calculates maximum permissible regenerative torque and issues torque request to\nInverterControl_SWC.\n4. If battery State of Charge exceeds 95%, regenerative braking is tapered and hydraulic friction braking assumes\nfull deceleration torque.\n5.3 Flow 3: Thermal Protection Derating Flow\n1. ThermalControl_SWC monitors Sig_CoolantTemp.\n2. If coolant temperature exceeds 105 degC, ThermalControl_SWC requests power limit derating.\n3. ThrottleControl_SWC clamps maximum allowable throttle angle to 50% to prevent electric motor stator\noverheating.",
+        "metadata": {
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923",
+          "filename": "synthetic_autosar_hld.pdf",
+          "char_count": 1645,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "section": "Section 5: Functional Flows and Inter-SWC Communication",
+          "page_num": 5,
+          "chunk_index": 4,
+          "chunk_id": "doc_ca2cc2aba1e4_p5_c4",
+          "extraction_method": "pdf_text"
+        },
+        "similarity": 0.5890953540802002,
+        "distance": 0.8218092918395996
+      },
+      {
+        "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+        "text": "SYNTHETIC TEST DATA ? NOT AN OFFICIAL AUTOSAR DOCUMENT\nDocument ID: AUTOSAR-HLD-SYNTH-2026-V1 | Revision: 1.0\nTitle: High-Level Design (HLD) Document ? Automotive Powertrain & Body Domain Controller\nSection 6: Dependencies, Timing & RTE Interactions\nThis section specifies inter-module execution dependencies, periodic task mapping, and bus communications.\n6.1 Task Scheduling Matrix\n- Runnable_CalculateThrottle is mapped to Task_10ms.\n- Runnable_EvaluateBrakeTorque is mapped to Task_10ms.\n- Runnable_MonitorBatteryState is mapped to Task_20ms.\n- Runnable_RegulateThermalLoop is mapped to Task_100ms.\n6.2 Communication Timing Specifications\nFor network transmission on CAN-FD Channel 1, message frames are serialized by the AUTOSAR COM stack.\nThe transmission period for Sig_ThrottleAngle is configured for 50ms cyclic execution on CAN-FD Channel 1 to\nconserve bus bandwidth.\n(Note: Engineering review required: Compare with Section 4 update rate).\n6.3 Fault Diagnostics and Recovery Concept\nAll hardware sensor anomalies and communication timeouts are logged via the Diagnostic Event Manager (DEM).\nFor detailed diagnostic trouble code (DTC) mapping, see Section 9.4.\nSoftware Component recovery actions follow ISO 26262 ASIL hazard mitigation guidelines.",
+        "metadata": {
+          "chunk_index": 5,
+          "char_count": 1258,
+          "doc_id": "doc_ca2cc2aba1e4",
+          "page_num": 6,
+          "filename": "synthetic_autosar_hld.pdf",
+          "extraction_method": "pdf_text",
+          "section": "Section 6: Dependencies, Timing & RTE Interactions",
+          "chunk_id": "doc_ca2cc2aba1e4_p6_c5",
+          "doc_hash": "ca2cc2aba1e4952edad389b7fa8487db730b7619ae2d05169472d5fb5fd51923"
+        },
+        "similarity": 0.5731237232685089,
+        "distance": 0.8537525534629822
+      }
+    ]
+  }
+]

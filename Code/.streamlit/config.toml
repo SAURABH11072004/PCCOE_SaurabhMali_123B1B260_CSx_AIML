@@ -1,0 +1,12 @@
+[server]
+# Exclude heavy ML package directories from the hot-reload file watcher.
+# Without this, Streamlit scans thousands of HuggingFace/transformers model files
+# on every startup, adding 30-120 seconds of unnecessary delay.
+folderWatchBlacklist = ["transformers", "sentence_transformers", "torch", "google", "chromadb"]
+
+[browser]
+gatherUsageStats = false
+
+[runner]
+# Disable magic commands to avoid accidental re-runs
+magicEnabled = false

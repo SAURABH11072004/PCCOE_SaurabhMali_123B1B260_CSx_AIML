@@ -1,0 +1,24 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Vector database local storage
+chroma_db/
+*.chroma
+
+# Logs and scratch files
+*.log
+scratch/
+.system_generated/

@@ -1,0 +1,375 @@
+[
+  {
+    "question_id": "Q01",
+    "question": "What is the primary function of ThrottleControl_SWC, and what are its provided and required ports?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.1",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q02",
+    "question": "What are the data type, range, and update rate of Sig_ThrottleAngle in the interface dictionary?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 4,
+        "section": "Page 4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p4_c3"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 6,
+        "section": "6.2",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p6_c5"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q03",
+    "question": "What signals are contained within the If_BatteryState interface and what are their update rates?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 4,
+        "section": "Section 4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p4_c3"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 4,
+        "section": "4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p4_c3"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q04",
+    "question": "Which software component controls vehicle deceleration, brake-by-wire hydraulic blending, and regenerative torque requests?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.2 BrakeManager_SWC",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q05",
+    "question": "Explain Flow 1: Driver Acceleration Request Flow from accelerator pedal depression to actuator publication.",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 5,
+        "section": "Section 5: Functional Flows and Inter-SWC Communication",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p5_c4"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 5,
+        "section": "5.1",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p5_c4"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q06",
+    "question": "What happens in Flow 2 if the battery State of Charge exceeds 95% during regenerative braking?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 5,
+        "section": "5.2 Flow 2: Regenerative Braking Coordination Flow",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p5_c4"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q07",
+    "question": "How does ThermalControl_SWC trigger derating if coolant temperature exceeds 105 degC?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 5,
+        "section": "5.3",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p5_c4"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q08",
+    "question": "Is there a conflict regarding the transmission period of Sig_ThrottleAngle between Section 4 and Section 6.2?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 4,
+        "section": "4.1",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p4_c3"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 6,
+        "section": "6.2",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p6_c5"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 4,
+        "section": "4.1 & 4.2",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p4_c3"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q09",
+    "question": "Does ThermalControl_SWC reference any interface that is missing from the interface dictionary?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q10",
+    "question": "What AUTOSAR Classic release and operating system standard are specified in the document?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 1,
+        "section": "1.1 Purpose and Architectural Objectives / Page: 2, Section: 2.1 Execution Model",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p1_c0"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q11",
+    "question": "What ASIL safety integrity levels are allocated to ThrottleControl_SWC, BrakeManager_SWC, and BatteryManagement_SWC?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.1",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.2",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.3",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q12",
+    "question": "Which tasks in the scheduling matrix execute Runnable_CalculateThrottle and Runnable_RegulateThermalLoop?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 6,
+        "section": "6.1",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p6_c5"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q13",
+    "question": "What is the radar sensor frequency and antenna array configuration for Autonomous Emergency Braking (AEB)?",
+    "should_abstain": true,
+    "citations": [],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q14",
+    "question": "What is the chemical composition of the cathode material used in the battery cells?",
+    "should_abstain": true,
+    "citations": [],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q15",
+    "question": "Which software component manages the infotainment head-unit Bluetooth pairing state?",
+    "should_abstain": true,
+    "citations": [],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q16",
+    "question": "What are the ports and role of Gateway_SWC in the architecture?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.5",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q17",
+    "question": "What is the update rate and range of Sig_PumpSpeedTarget in the If_ThermalData interface?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 4,
+        "section": "Page 4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p4_c3"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q18",
+    "question": "Does Section 6.3 refer to any external section for diagnostic trouble code mapping?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 6,
+        "section": "6.3",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p6_c5"
+      }
+    ],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q19",
+    "question": "What is the lidar point cloud resolution and laser wavelength used in the vehicle perception system?",
+    "should_abstain": true,
+    "citations": [],
+    "validity_rate": 1.0
+  },
+  {
+    "question_id": "Q20",
+    "question": "Does Flow 2 reference any component that is missing from Section 3's component list?",
+    "should_abstain": false,
+    "citations": [
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 5,
+        "section": "5.2",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p5_c4"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.1",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.2",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.3",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.4",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      },
+      {
+        "document": "synthetic_autosar_hld.pdf",
+        "page": 3,
+        "section": "3.5",
+        "is_valid": true,
+        "supporting_chunk_id": "doc_2bcb16c701be_p3_c2"
+      }
+    ],
+    "validity_rate": 1.0
+  }
+]

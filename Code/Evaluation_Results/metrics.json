@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-10-12T13:05:07Z",
+  "dataset_name": "AUTOSAR HLD Synthetic Evaluation Dataset",
+  "total_questions": 20,
+  "document_processing_time_seconds": 34.015,
+  "average_query_latency_seconds": 0.0506,
+  "embedding_model": "all-MiniLM-L6-v2",
+  "gemini_model": "gemini-3.5-flash-lite",
+  "execution_mode": "retrieval_only",
+  "is_live_generation": false,
+  "metrics": {
+    "factual_queries_evaluated": 16,
+    "hits_at_k": 16,
+    "retrieval_recall_at_k": 1.0,
+    "total_citations_emitted": 32,
+    "valid_citations": 32,
+    "citation_validity_rate": 1.0,
+    "citation_coverage_rate": 1.0,
+    "negative_queries_count": 4,
+    "correct_abstentions": 4,
+    "abstention_accuracy": 1.0,
+    "evaluated_queries": 16,
+    "total_expected_facts": 64,
+    "matched_facts": 53,
+    "factual_match_rate": 0.8281
+  }
+}
