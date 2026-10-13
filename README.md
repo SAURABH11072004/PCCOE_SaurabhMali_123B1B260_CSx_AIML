@@ -1,5 +1,12 @@
 # AUTOSAR HLD Document Analysis Assistant
 
+## Live Demo
+
+Try the deployed application: [AUTOSAR HLD Assistant](https://hld-assistant-saurabhmali.streamlit.app/)
+
+The live app requires a valid Gemini API key for AI-generated answers; retrieval features may still be available if Gemini authentication is not configured correctly.
+
+
 An AI-powered document analysis assistant designed to extract, organize, retrieve, and validate architectural knowledge from AUTOSAR High-Level Design (HLD) documents using Retrieval-Augmented Generation (RAG).
 
 ## Overview
@@ -236,9 +243,9 @@ The latest recorded benchmark results are:
 | Citation Validity | 100% |
 | Citation Coverage | 100% |
 | Abstention Accuracy | 100% |
-| Factual Match Rate | 89.1% |
-| Average Query Latency | 1.403 seconds |
-| Document Ingestion Time | 0.60 seconds |
+| Factual Match Rate | 82.8% |
+| Average Query Latency | 0.051 seconds |
+| Document Ingestion Time | 34.02 seconds |
 
 These figures are results from the recorded synthetic evaluation dataset and configuration. They should not be interpreted as guaranteed performance on real-world AUTOSAR documents or as evidence of production readiness.
 
